@@ -60,3 +60,17 @@ function gerarFaturaStr(fatura, pecas) {
   resultado += `Créditos acumulados: ${calcularTotalCreditos(pecas, fatura.apresentacoes)} \n`;
   return resultado;
 }
+
+function gerarFaturaHTML(fatura, pecas) {
+  let resultado = `<html>\n<p> Fatura ${fatura.cliente} </p>\n<ul>\n`;
+
+  for (let apre of fatura.apresentacoes) {
+    resultado += `<li>  ${getPeca(pecas, apre).nome}: ${formatarMoeda(calcularTotalApresentacao(pecas, apre))} (${apre.audiencia} assentos) </li>\n`;
+  }
+
+  resultado += `</ul>\n`;
+  resultado += `<p> Valor total: ${formatarMoeda(calcularTotalFatura(pecas, fatura.apresentacoes))} </p>\n`;
+  resultado += `<p> Créditos acumulados: ${calcularTotalCreditos(pecas, fatura.apresentacoes)} </p>\n`;
+  resultado += `</html>`;
+  return resultado;
+}
