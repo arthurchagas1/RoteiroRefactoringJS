@@ -22,19 +22,32 @@ function gerarFaturaStr(fatura, pecas) {
     return total;
   }
 
+  function calcularCredito(apre) {
+    let creditos = 0;
+    creditos += Math.max(apre.audiencia - 30, 0);
+    if (getPeca(apre).tipo === "comedia") creditos += Math.floor(apre.audiencia / 5);
+    return creditos;
+  }
+
+  function formatarMoeda(valor) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency", currency: "BRL", minimumFractionDigits: 2
+    }).format(valor / 100);
+  }
+
   let totalFatura = 0;
   let creditos = 0;
   let resultado = `Fatura ${fatura.cliente}\n`;
 
   for (let apre of fatura.apresentacoes) {
     let total = calcularTotalApresentacao(apre);
+    creditos += calcularCredito(apre);
 
-    creditos += Math.max(apre.audiencia - 30, 0);
-    if (getPeca(apre).tipo === "comedia") creditos += Math.floor(apre.audiencia / 5);
-
-    resultado += `  ${getPeca(apre).nome}: R$ ${(total / 100).toFixed(2)} (${apre.audiencia} assentos)\n`;
+    resultado += `  ${getPeca(apre).nome}: ${formatarMoeda(total)} (${apre.audiencia} assentos)\n`;
     totalFatura += total;
   }
 
-  resultado += `Valor total: R$ ${(totalFatura / 100).toFixed(2)}\n`;
-  resultado += `Créditos acum
+  resultado += `Valor total: ${formatarMoeda(totalFatura)}\n`;
+  resultado += `Créditos acumulados: ${creditos} \n`;
+  return resultado;
+}
