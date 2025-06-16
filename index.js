@@ -1,8 +1,12 @@
 function gerarFaturaStr(fatura, pecas) {
 
-  function calcularTotalApresentacao(apre, peca) {
+  function getPeca(apre) {
+    return pecas[apre.id];
+  }
+
+  function calcularTotalApresentacao(apre) {
     let total = 0;
-    switch (peca.tipo) {
+    switch (getPeca(apre).tipo) {
       case "tragedia":
         total = 40000;
         if (apre.audiencia > 30) total += 1000 * (apre.audiencia - 30);
@@ -13,7 +17,7 @@ function gerarFaturaStr(fatura, pecas) {
         total += 300 * apre.audiencia;
         break;
       default:
-        throw new Error(`Tipo desconhecido: ${peca.tipo}`);
+        throw new Error(`Tipo desconhecido: ${getPeca(apre).tipo}`);
     }
     return total;
   }
@@ -23,17 +27,14 @@ function gerarFaturaStr(fatura, pecas) {
   let resultado = `Fatura ${fatura.cliente}\n`;
 
   for (let apre of fatura.apresentacoes) {
-    const peca = pecas[apre.id];
-    let total = calcularTotalApresentacao(apre, peca);
+    let total = calcularTotalApresentacao(apre);
 
     creditos += Math.max(apre.audiencia - 30, 0);
-    if (peca.tipo === "comedia") creditos += Math.floor(apre.audiencia / 5);
+    if (getPeca(apre).tipo === "comedia") creditos += Math.floor(apre.audiencia / 5);
 
-    resultado += `  ${peca.nome}: R$ ${(total / 100).toFixed(2)} (${apre.audiencia} assentos)\n`;
+    resultado += `  ${getPeca(apre).nome}: R$ ${(total / 100).toFixed(2)} (${apre.audiencia} assentos)\n`;
     totalFatura += total;
   }
 
   resultado += `Valor total: R$ ${(totalFatura / 100).toFixed(2)}\n`;
-  resultado += `Créditos acumulados: ${creditos} \n`;
-  return resultado;
-}
+  resultado += `Créditos acum
